@@ -41,7 +41,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "91d35444ef90202447c4cfd1d957b957569a7540a8fd67a02204e44e60572088.zip"
+     "S3Key": "4da2cd5b727b82c042081838988ea29e16b66eef175804423fe306bb0879e451.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -64,7 +64,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "ProductServiceStack/productsImages/productLambda/Resource",
-    "aws:asset:path": "asset.91d35444ef90202447c4cfd1d957b957569a7540a8fd67a02204e44e60572088",
+    "aws:asset:path": "asset.4da2cd5b727b82c042081838988ea29e16b66eef175804423fe306bb0879e451",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
