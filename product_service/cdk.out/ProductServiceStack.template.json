@@ -1,6 +1,81 @@
 {
  "Resources": {
-  "productsImagesproductLambdaServiceRole65D304B3": {
+  "productsImagesbucket0133F10F": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "ProductServiceStack/productsImages-bucket/Resource"
+   }
+  },
+  "productsImagesbucketPolicy91E78A93": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "productsImagesbucket0133F10F"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "productsImagesbucket0133F10F",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "productsImagesbucket0133F10F",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProductServiceStack/productsImages-bucket/Policy/Resource"
+   }
+  },
+  "ProductServiceproductLambdaServiceRole26A678A7": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -31,27 +106,29 @@
     ]
    },
    "Metadata": {
-    "aws:cdk:path": "ProductServiceStack/productsImages/productLambda/ServiceRole/Resource"
+    "aws:cdk:path": "ProductServiceStack/ProductService/productLambda/ServiceRole/Resource"
    }
   },
-  "productsImagesproductLambdaB89800AA": {
+  "ProductServiceproductLambda46558C21": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4da2cd5b727b82c042081838988ea29e16b66eef175804423fe306bb0879e451.zip"
+     "S3Key": "409b9cd09fc77c15ea96b0759262d1b1d42a99c884c67f026a840aaf01553cde.zip"
     },
     "Role": {
      "Fn::GetAtt": [
-      "productsImagesproductLambdaServiceRole65D304B3",
+      "ProductServiceproductLambdaServiceRole26A678A7",
       "Arn"
      ]
     },
     "Environment": {
      "Variables": {
-      "BUCKET_NAME": "OUR_BUCKET_ARN",
+      "BUCKET_NAME": {
+       "Ref": "productsImagesbucket0133F10F"
+      },
       "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
      }
     },
@@ -60,16 +137,16 @@
     "Timeout": 10
    },
    "DependsOn": [
-    "productsImagesproductLambdaServiceRole65D304B3"
+    "ProductServiceproductLambdaServiceRole26A678A7"
    ],
    "Metadata": {
-    "aws:cdk:path": "ProductServiceStack/productsImages/productLambda/Resource",
-    "aws:asset:path": "asset.4da2cd5b727b82c042081838988ea29e16b66eef175804423fe306bb0879e451",
+    "aws:cdk:path": "ProductServiceStack/ProductService/productLambda/Resource",
+    "aws:asset:path": "asset.409b9cd09fc77c15ea96b0759262d1b1d42a99c884c67f026a840aaf01553cde",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
   },
-  "productsImagescategoryLambdaServiceRoleA8C1BC5B": {
+  "ProductServicecategoryLambdaServiceRole9E570BCD": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -100,27 +177,29 @@
     ]
    },
    "Metadata": {
-    "aws:cdk:path": "ProductServiceStack/productsImages/categoryLambda/ServiceRole/Resource"
+    "aws:cdk:path": "ProductServiceStack/ProductService/categoryLambda/ServiceRole/Resource"
    }
   },
-  "productsImagescategoryLambda727F3DB8": {
+  "ProductServicecategoryLambda4AADC383": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a3b277a5afd3593f09d83e05d63c557b6d17d179dc3b94196dbf46fc09c55300.zip"
+     "S3Key": "55e0753e23a34119096b4ce2dcba9f6ab474d220fd03e00e3a224337d661f64e.zip"
     },
     "Role": {
      "Fn::GetAtt": [
-      "productsImagescategoryLambdaServiceRoleA8C1BC5B",
+      "ProductServicecategoryLambdaServiceRole9E570BCD",
       "Arn"
      ]
     },
     "Environment": {
      "Variables": {
-      "BUCKET_NAME": "OUR_BUCKET_ARN",
+      "BUCKET_NAME": {
+       "Ref": "productsImagesbucket0133F10F"
+      },
       "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
      }
     },
@@ -129,16 +208,16 @@
     "Timeout": 10
    },
    "DependsOn": [
-    "productsImagescategoryLambdaServiceRoleA8C1BC5B"
+    "ProductServicecategoryLambdaServiceRole9E570BCD"
    ],
    "Metadata": {
-    "aws:cdk:path": "ProductServiceStack/productsImages/categoryLambda/Resource",
-    "aws:asset:path": "asset.a3b277a5afd3593f09d83e05d63c557b6d17d179dc3b94196dbf46fc09c55300",
+    "aws:cdk:path": "ProductServiceStack/ProductService/categoryLambda/Resource",
+    "aws:asset:path": "asset.55e0753e23a34119096b4ce2dcba9f6ab474d220fd03e00e3a224337d661f64e",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
   },
-  "productsImagesdealsLambdaServiceRole96E0F63E": {
+  "ProductServicedealsLambdaServiceRole82292B29": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -169,10 +248,10 @@
     ]
    },
    "Metadata": {
-    "aws:cdk:path": "ProductServiceStack/productsImages/dealsLambda/ServiceRole/Resource"
+    "aws:cdk:path": "ProductServiceStack/ProductService/dealsLambda/ServiceRole/Resource"
    }
   },
-  "productsImagesdealsLambdaA321F43B": {
+  "ProductServicedealsLambda594E45C8": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
@@ -183,13 +262,15 @@
     },
     "Role": {
      "Fn::GetAtt": [
-      "productsImagesdealsLambdaServiceRole96E0F63E",
+      "ProductServicedealsLambdaServiceRole82292B29",
       "Arn"
      ]
     },
     "Environment": {
      "Variables": {
-      "BUCKET_NAME": "OUR_BUCKET_ARN",
+      "BUCKET_NAME": {
+       "Ref": "productsImagesbucket0133F10F"
+      },
       "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
      }
     },
@@ -198,11 +279,139 @@
     "Timeout": 10
    },
    "DependsOn": [
-    "productsImagesdealsLambdaServiceRole96E0F63E"
+    "ProductServicedealsLambdaServiceRole82292B29"
    ],
    "Metadata": {
-    "aws:cdk:path": "ProductServiceStack/productsImages/dealsLambda/Resource",
+    "aws:cdk:path": "ProductServiceStack/ProductService/dealsLambda/Resource",
     "aws:asset:path": "asset.09ee95550a8376a60e347469d8316f904ba216585381864ef883e349e3b5b9c2",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "ProductServiceimageUploadLambdaServiceRoleBDF889D8": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProductServiceStack/ProductService/imageUploadLambda/ServiceRole/Resource"
+   }
+  },
+  "ProductServiceimageUploadLambdaServiceRoleDefaultPolicy92F2BCD1": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "productsImagesbucket0133F10F",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "productsImagesbucket0133F10F",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ProductServiceimageUploadLambdaServiceRoleDefaultPolicy92F2BCD1",
+    "Roles": [
+     {
+      "Ref": "ProductServiceimageUploadLambdaServiceRoleBDF889D8"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProductServiceStack/ProductService/imageUploadLambda/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "ProductServiceimageUploadLambdaFB6CC065": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "05f590e5e60fc2288a726a2bbe4fbad27db79fc875761de39833d128b3a2531e.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "ProductServiceimageUploadLambdaServiceRoleBDF889D8",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "BUCKET_NAME": {
+       "Ref": "productsImagesbucket0133F10F"
+      },
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "Handler": "index.handler",
+    "Runtime": "nodejs18.x",
+    "Timeout": 10
+   },
+   "DependsOn": [
+    "ProductServiceimageUploadLambdaServiceRoleDefaultPolicy92F2BCD1",
+    "ProductServiceimageUploadLambdaServiceRoleBDF889D8"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "ProductServiceStack/ProductService/imageUploadLambda/Resource",
+    "aws:asset:path": "asset.05f590e5e60fc2288a726a2bbe4fbad27db79fc875761de39833d128b3a2531e",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
@@ -216,7 +425,7 @@
     "aws:cdk:path": "ProductServiceStack/ProductApiGateway/product-ApiGtw/Resource"
    }
   },
-  "ProductApiGatewayproductApiGtwDeploymentD17BF151ee27348d2807e6799e5ba57f0785b29a": {
+  "ProductApiGatewayproductApiGtwDeploymentD17BF151af5a8bdcb334bf5208ff6ca081ff51c9": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "RestApiId": {
@@ -245,7 +454,9 @@
     "ProductApiGatewayproductApiGtwproductid0D85BBBA",
     "ProductApiGatewayproductApiGtwproductGET24CD24C2",
     "ProductApiGatewayproductApiGtwproductPOSTB78E613B",
-    "ProductApiGatewayproductApiGtwproduct7D788310"
+    "ProductApiGatewayproductApiGtwproduct7D788310",
+    "ProductApiGatewayproductApiGtwuploaderGET63B3E815",
+    "ProductApiGatewayproductApiGtwuploaderF15B1684"
    ],
    "Metadata": {
     "aws:cdk:path": "ProductServiceStack/ProductApiGateway/product-ApiGtw/Deployment/Resource"
@@ -258,7 +469,7 @@
      "Ref": "ProductApiGatewayproductApiGtw8D9328A4"
     },
     "DeploymentId": {
-     "Ref": "ProductApiGatewayproductApiGtwDeploymentD17BF151ee27348d2807e6799e5ba57f0785b29a"
+     "Ref": "ProductApiGatewayproductApiGtwDeploymentD17BF151af5a8bdcb334bf5208ff6ca081ff51c9"
     },
     "StageName": "prod"
    },
@@ -290,7 +501,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagesproductLambdaB89800AA",
+      "ProductServiceproductLambda46558C21",
       "Arn"
      ]
     },
@@ -334,7 +545,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagesproductLambdaB89800AA",
+      "ProductServiceproductLambda46558C21",
       "Arn"
      ]
     },
@@ -397,7 +608,7 @@
         ":lambda:path/2015-03-31/functions/",
         {
          "Fn::GetAtt": [
-          "productsImagesproductLambdaB89800AA",
+          "ProductServiceproductLambda46558C21",
           "Arn"
          ]
         },
@@ -417,7 +628,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagesproductLambdaB89800AA",
+      "ProductServiceproductLambda46558C21",
       "Arn"
      ]
     },
@@ -461,7 +672,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagesproductLambdaB89800AA",
+      "ProductServiceproductLambda46558C21",
       "Arn"
      ]
     },
@@ -524,7 +735,7 @@
         ":lambda:path/2015-03-31/functions/",
         {
          "Fn::GetAtt": [
-          "productsImagesproductLambdaB89800AA",
+          "ProductServiceproductLambda46558C21",
           "Arn"
          ]
         },
@@ -559,7 +770,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagesproductLambdaB89800AA",
+      "ProductServiceproductLambda46558C21",
       "Arn"
      ]
     },
@@ -603,7 +814,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagesproductLambdaB89800AA",
+      "ProductServiceproductLambda46558C21",
       "Arn"
      ]
     },
@@ -666,7 +877,7 @@
         ":lambda:path/2015-03-31/functions/",
         {
          "Fn::GetAtt": [
-          "productsImagesproductLambdaB89800AA",
+          "ProductServiceproductLambda46558C21",
           "Arn"
          ]
         },
@@ -686,7 +897,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagesproductLambdaB89800AA",
+      "ProductServiceproductLambda46558C21",
       "Arn"
      ]
     },
@@ -730,7 +941,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagesproductLambdaB89800AA",
+      "ProductServiceproductLambda46558C21",
       "Arn"
      ]
     },
@@ -793,7 +1004,7 @@
         ":lambda:path/2015-03-31/functions/",
         {
          "Fn::GetAtt": [
-          "productsImagesproductLambdaB89800AA",
+          "ProductServiceproductLambda46558C21",
           "Arn"
          ]
         },
@@ -813,7 +1024,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagesproductLambdaB89800AA",
+      "ProductServiceproductLambda46558C21",
       "Arn"
      ]
     },
@@ -857,7 +1068,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagesproductLambdaB89800AA",
+      "ProductServiceproductLambda46558C21",
       "Arn"
      ]
     },
@@ -920,7 +1131,7 @@
         ":lambda:path/2015-03-31/functions/",
         {
          "Fn::GetAtt": [
-          "productsImagesproductLambdaB89800AA",
+          "ProductServiceproductLambda46558C21",
           "Arn"
          ]
         },
@@ -958,7 +1169,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagescategoryLambda727F3DB8",
+      "ProductServicecategoryLambda4AADC383",
       "Arn"
      ]
     },
@@ -1002,7 +1213,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagescategoryLambda727F3DB8",
+      "ProductServicecategoryLambda4AADC383",
       "Arn"
      ]
     },
@@ -1065,7 +1276,7 @@
         ":lambda:path/2015-03-31/functions/",
         {
          "Fn::GetAtt": [
-          "productsImagescategoryLambda727F3DB8",
+          "ProductServicecategoryLambda4AADC383",
           "Arn"
          ]
         },
@@ -1085,7 +1296,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagescategoryLambda727F3DB8",
+      "ProductServicecategoryLambda4AADC383",
       "Arn"
      ]
     },
@@ -1129,7 +1340,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagescategoryLambda727F3DB8",
+      "ProductServicecategoryLambda4AADC383",
       "Arn"
      ]
     },
@@ -1192,7 +1403,7 @@
         ":lambda:path/2015-03-31/functions/",
         {
          "Fn::GetAtt": [
-          "productsImagescategoryLambda727F3DB8",
+          "ProductServicecategoryLambda4AADC383",
           "Arn"
          ]
         },
@@ -1227,7 +1438,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagescategoryLambda727F3DB8",
+      "ProductServicecategoryLambda4AADC383",
       "Arn"
      ]
     },
@@ -1271,7 +1482,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagescategoryLambda727F3DB8",
+      "ProductServicecategoryLambda4AADC383",
       "Arn"
      ]
     },
@@ -1334,7 +1545,7 @@
         ":lambda:path/2015-03-31/functions/",
         {
          "Fn::GetAtt": [
-          "productsImagescategoryLambda727F3DB8",
+          "ProductServicecategoryLambda4AADC383",
           "Arn"
          ]
         },
@@ -1354,7 +1565,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagescategoryLambda727F3DB8",
+      "ProductServicecategoryLambda4AADC383",
       "Arn"
      ]
     },
@@ -1398,7 +1609,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagescategoryLambda727F3DB8",
+      "ProductServicecategoryLambda4AADC383",
       "Arn"
      ]
     },
@@ -1461,7 +1672,7 @@
         ":lambda:path/2015-03-31/functions/",
         {
          "Fn::GetAtt": [
-          "productsImagescategoryLambda727F3DB8",
+          "ProductServicecategoryLambda4AADC383",
           "Arn"
          ]
         },
@@ -1481,7 +1692,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagescategoryLambda727F3DB8",
+      "ProductServicecategoryLambda4AADC383",
       "Arn"
      ]
     },
@@ -1525,7 +1736,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagescategoryLambda727F3DB8",
+      "ProductServicecategoryLambda4AADC383",
       "Arn"
      ]
     },
@@ -1588,7 +1799,7 @@
         ":lambda:path/2015-03-31/functions/",
         {
          "Fn::GetAtt": [
-          "productsImagescategoryLambda727F3DB8",
+          "ProductServicecategoryLambda4AADC383",
           "Arn"
          ]
         },
@@ -1626,7 +1837,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagesdealsLambdaA321F43B",
+      "ProductServicedealsLambda594E45C8",
       "Arn"
      ]
     },
@@ -1670,7 +1881,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagesdealsLambdaA321F43B",
+      "ProductServicedealsLambda594E45C8",
       "Arn"
      ]
     },
@@ -1733,7 +1944,7 @@
         ":lambda:path/2015-03-31/functions/",
         {
          "Fn::GetAtt": [
-          "productsImagesdealsLambdaA321F43B",
+          "ProductServicedealsLambda594E45C8",
           "Arn"
          ]
         },
@@ -1753,7 +1964,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagesdealsLambdaA321F43B",
+      "ProductServicedealsLambda594E45C8",
       "Arn"
      ]
     },
@@ -1797,7 +2008,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagesdealsLambdaA321F43B",
+      "ProductServicedealsLambda594E45C8",
       "Arn"
      ]
     },
@@ -1860,7 +2071,7 @@
         ":lambda:path/2015-03-31/functions/",
         {
          "Fn::GetAtt": [
-          "productsImagesdealsLambdaA321F43B",
+          "ProductServicedealsLambda594E45C8",
           "Arn"
          ]
         },
@@ -1895,7 +2106,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagesdealsLambdaA321F43B",
+      "ProductServicedealsLambda594E45C8",
       "Arn"
      ]
     },
@@ -1939,7 +2150,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagesdealsLambdaA321F43B",
+      "ProductServicedealsLambda594E45C8",
       "Arn"
      ]
     },
@@ -2002,7 +2213,7 @@
         ":lambda:path/2015-03-31/functions/",
         {
          "Fn::GetAtt": [
-          "productsImagesdealsLambdaA321F43B",
+          "ProductServicedealsLambda594E45C8",
           "Arn"
          ]
         },
@@ -2022,7 +2233,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagesdealsLambdaA321F43B",
+      "ProductServicedealsLambda594E45C8",
       "Arn"
      ]
     },
@@ -2066,7 +2277,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagesdealsLambdaA321F43B",
+      "ProductServicedealsLambda594E45C8",
       "Arn"
      ]
     },
@@ -2129,7 +2340,7 @@
         ":lambda:path/2015-03-31/functions/",
         {
          "Fn::GetAtt": [
-          "productsImagesdealsLambdaA321F43B",
+          "ProductServicedealsLambda594E45C8",
           "Arn"
          ]
         },
@@ -2149,7 +2360,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagesdealsLambdaA321F43B",
+      "ProductServicedealsLambda594E45C8",
       "Arn"
      ]
     },
@@ -2193,7 +2404,7 @@
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "productsImagesdealsLambdaA321F43B",
+      "ProductServicedealsLambda594E45C8",
       "Arn"
      ]
     },
@@ -2256,7 +2467,7 @@
         ":lambda:path/2015-03-31/functions/",
         {
          "Fn::GetAtt": [
-          "productsImagesdealsLambdaA321F43B",
+          "ProductServicedealsLambda594E45C8",
           "Arn"
          ]
         },
@@ -2270,10 +2481,155 @@
     "aws:cdk:path": "ProductServiceStack/ProductApiGateway/product-ApiGtw/Default/deals/{id}/DELETE/Resource"
    }
   },
+  "ProductApiGatewayproductApiGtwuploaderF15B1684": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "ProductApiGatewayproductApiGtw8D9328A4",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "uploader",
+    "RestApiId": {
+     "Ref": "ProductApiGatewayproductApiGtw8D9328A4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProductServiceStack/ProductApiGateway/product-ApiGtw/Default/uploader/Resource"
+   }
+  },
+  "ProductApiGatewayproductApiGtwuploaderGETApiPermissionProductServiceStackProductApiGatewayproductApiGtwABA7C1CBGETuploader0B06EC12": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ProductServiceimageUploadLambdaFB6CC065",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ProductApiGatewayproductApiGtw8D9328A4"
+       },
+       "/",
+       {
+        "Ref": "ProductApiGatewayproductApiGtwDeploymentStageprod0E24E675"
+       },
+       "/GET/uploader"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProductServiceStack/ProductApiGateway/product-ApiGtw/Default/uploader/GET/ApiPermission.ProductServiceStackProductApiGatewayproductApiGtwABA7C1CB.GET..uploader"
+   }
+  },
+  "ProductApiGatewayproductApiGtwuploaderGETApiPermissionTestProductServiceStackProductApiGatewayproductApiGtwABA7C1CBGETuploader4BF0E3BB": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ProductServiceimageUploadLambdaFB6CC065",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "ProductApiGatewayproductApiGtw8D9328A4"
+       },
+       "/test-invoke-stage/GET/uploader"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProductServiceStack/ProductApiGateway/product-ApiGtw/Default/uploader/GET/ApiPermission.Test.ProductServiceStackProductApiGatewayproductApiGtwABA7C1CB.GET..uploader"
+   }
+  },
+  "ProductApiGatewayproductApiGtwuploaderGET63B3E815": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "HttpMethod": "GET",
+    "ResourceId": {
+     "Ref": "ProductApiGatewayproductApiGtwuploaderF15B1684"
+    },
+    "RestApiId": {
+     "Ref": "ProductApiGatewayproductApiGtw8D9328A4"
+    },
+    "AuthorizationType": "NONE",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "ProductServiceimageUploadLambdaFB6CC065",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ProductServiceStack/ProductApiGateway/product-ApiGtw/Default/uploader/GET/Resource"
+   }
+  },
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WQy26DQAxFvyX7wW1JVXWbUHXXh8gHoAkYah4ehD1FEeLfqxnS1+peW/bxlVN4SCHd2VmSsuqSns6wnNSWnbGzFEtvh3NlC3YVtgKvUZ49l0qODdkBltz1aLKag65G9oUVQRU4BDGyh6MvO9SjFTQbDZas5h9IVvM7TgOJkOPV2JEaqzjbCyw5ih5GivSrfcKxd5cBWUP3T3VS28Qcm8lRnJ9KjGe/iyto8y+oH64Krc2t6+9czB5AxE2YePM6ev23ntWcOa5IY+rwH2jl5vPuEdJbuN+1QpRMnpUGhHzTLyXS0NhrAQAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1VQy26DMBD8ltxh25Kq6jWh6q0PkQ9AjlnI8rARaxchi3+vbKPQnmZmNZ6ddQYvGWQHMXMqqy7t6QruYoTsEjFz6fgI7mxlhybJa7WxCN+6J7ns401HcRaMa9KL4VqJUukKW4bPAO9WSUNaJSQGcIXu0UcE3BMjWxM+loIZDcPJwxYILq/VPcfbcRqImbRaEzFSIwzOYgFXIJvTSGHBRt9w7PUyoAoH/VEXI5pQJZICWdtJoj/kLragyD/Q3HTlR5Gt6+4LbX0QqcY7vqwZrfn3PK9VrlVFJrT2XwQtP/w8vUL2CM+HlonSySpDA0IR8ReKvcnXrAEAAA=="
    },
    "Metadata": {
     "aws:cdk:path": "ProductServiceStack/CDKMetadata/Default"

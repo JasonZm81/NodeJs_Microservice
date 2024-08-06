@@ -1,19 +1,19 @@
 import mongoose from "mongoose";
 
 type CategoryModel = {
-  name: string;
-  nameTranslations: string;
-  parentId: string;
-  subCategories: CategoryDoc[];
-  products: string[];
-  displayOrder: number; // 100 - 1
-  imageUrl: string;
+    name: string;
+    nameTranslations: string;
+    parentId: string;
+    subCategories: CategoryDoc[];
+    products: string[];
+    displayOrder: number;
+    imageUrl: string;
 };
 
 export type CategoryDoc = mongoose.Document & CategoryModel;
 
-const categorySchema = new mongoose.Schema(
-  {
+const categorySchema = new mongoose.Schema (
+   {
     name: String,
     nameTranslations: { en: { type: String }, de: { type: String } },
     parentId: {
@@ -24,7 +24,7 @@ const categorySchema = new mongoose.Schema(
       {
         type: mongoose.SchemaTypes.ObjectId,
         ref: "categories",
-      },
+      }
     ],
     products: [
       {
@@ -34,21 +34,22 @@ const categorySchema = new mongoose.Schema(
     ],
     displayOrder: { type: Number, default: 1 },
     imageUrl: String,
-  },
-  {
+   },
+   {
     toJSON: {
-      transform(doc, ret, options) {
-        delete ret.__v;
-        delete ret.createdAt;
-        delete ret.updatedAt;
-      },
+        transform(doc, ret, options) {
+            delete ret.__v;
+            delete ret.createdAt;
+            delete ret.updatedAt;
+        },
     },
     timestamps: true,
-  }
+   }
 );
 
-const categories =
-  mongoose.models.categories ||
-  mongoose.model<CategoryDoc>("categories", categorySchema);
+const categories = 
+    mongoose.models.categories ||
+    mongoose.model<CategoryDoc>("categories", categorySchema);
 
 export { categories };
+

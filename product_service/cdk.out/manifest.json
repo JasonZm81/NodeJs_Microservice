@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/68d6df257230cc10c0ab3a79465502e30b8cf4bb5b17166d804dd15d08f3eb90.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3d41e22e68fedd5f3702847a0b4d8f685e3b4cfbea70ec6c846ba233c448bd64.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,40 +33,70 @@
         "ProductServiceStack.assets"
       ],
       "metadata": {
-        "/ProductServiceStack/productsImages/productLambda/ServiceRole/Resource": [
+        "/ProductServiceStack/productsImages-bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "productsImagesproductLambdaServiceRole65D304B3"
+            "data": "productsImagesbucket0133F10F"
           }
         ],
-        "/ProductServiceStack/productsImages/productLambda/Resource": [
+        "/ProductServiceStack/productsImages-bucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "productsImagesproductLambdaB89800AA"
+            "data": "productsImagesbucketPolicy91E78A93"
           }
         ],
-        "/ProductServiceStack/productsImages/categoryLambda/ServiceRole/Resource": [
+        "/ProductServiceStack/ProductService/productLambda/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "productsImagescategoryLambdaServiceRoleA8C1BC5B"
+            "data": "ProductServiceproductLambdaServiceRole26A678A7"
           }
         ],
-        "/ProductServiceStack/productsImages/categoryLambda/Resource": [
+        "/ProductServiceStack/ProductService/productLambda/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "productsImagescategoryLambda727F3DB8"
+            "data": "ProductServiceproductLambda46558C21"
           }
         ],
-        "/ProductServiceStack/productsImages/dealsLambda/ServiceRole/Resource": [
+        "/ProductServiceStack/ProductService/categoryLambda/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "productsImagesdealsLambdaServiceRole96E0F63E"
+            "data": "ProductServicecategoryLambdaServiceRole9E570BCD"
           }
         ],
-        "/ProductServiceStack/productsImages/dealsLambda/Resource": [
+        "/ProductServiceStack/ProductService/categoryLambda/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "productsImagesdealsLambdaA321F43B"
+            "data": "ProductServicecategoryLambda4AADC383"
+          }
+        ],
+        "/ProductServiceStack/ProductService/dealsLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProductServicedealsLambdaServiceRole82292B29"
+          }
+        ],
+        "/ProductServiceStack/ProductService/dealsLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProductServicedealsLambda594E45C8"
+          }
+        ],
+        "/ProductServiceStack/ProductService/imageUploadLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProductServiceimageUploadLambdaServiceRoleBDF889D8"
+          }
+        ],
+        "/ProductServiceStack/ProductService/imageUploadLambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProductServiceimageUploadLambdaServiceRoleDefaultPolicy92F2BCD1"
+          }
+        ],
+        "/ProductServiceStack/ProductService/imageUploadLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProductServiceimageUploadLambdaFB6CC065"
           }
         ],
         "/ProductServiceStack/ProductApiGateway/product-ApiGtw/Resource": [
@@ -78,7 +108,7 @@
         "/ProductServiceStack/ProductApiGateway/product-ApiGtw/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ProductApiGatewayproductApiGtwDeploymentD17BF151ee27348d2807e6799e5ba57f0785b29a"
+            "data": "ProductApiGatewayproductApiGtwDeploymentD17BF151af5a8bdcb334bf5208ff6ca081ff51c9"
           }
         ],
         "/ProductServiceStack/ProductApiGateway/product-ApiGtw/DeploymentStage.prod/Resource": [
@@ -397,6 +427,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ProductApiGatewayproductApiGtwdealsidDELETEC7E642F5"
+          }
+        ],
+        "/ProductServiceStack/ProductApiGateway/product-ApiGtw/Default/uploader/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProductApiGatewayproductApiGtwuploaderF15B1684"
+          }
+        ],
+        "/ProductServiceStack/ProductApiGateway/product-ApiGtw/Default/uploader/GET/ApiPermission.ProductServiceStackProductApiGatewayproductApiGtwABA7C1CB.GET..uploader": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProductApiGatewayproductApiGtwuploaderGETApiPermissionProductServiceStackProductApiGatewayproductApiGtwABA7C1CBGETuploader0B06EC12"
+          }
+        ],
+        "/ProductServiceStack/ProductApiGateway/product-ApiGtw/Default/uploader/GET/ApiPermission.Test.ProductServiceStackProductApiGatewayproductApiGtwABA7C1CB.GET..uploader": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProductApiGatewayproductApiGtwuploaderGETApiPermissionTestProductServiceStackProductApiGatewayproductApiGtwABA7C1CBGETuploader4BF0E3BB"
+          }
+        ],
+        "/ProductServiceStack/ProductApiGateway/product-ApiGtw/Default/uploader/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProductApiGatewayproductApiGtwuploaderGET63B3E815"
           }
         ],
         "/ProductServiceStack/CDKMetadata/Default": [

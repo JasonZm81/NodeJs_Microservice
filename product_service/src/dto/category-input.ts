@@ -1,4 +1,4 @@
-import { Length, length } from "class-validator";
+import { Length } from "class-validator";
 
 export class CategoryInput {
   id: string;

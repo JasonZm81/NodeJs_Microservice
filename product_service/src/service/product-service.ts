@@ -4,6 +4,8 @@ import { ErrorResponse, SucessResponse } from "../utility/response";
 import { plainToClass } from "class-transformer";
 import { AppValidationError } from "../utility/errors";
 import { ProductInput } from "../dto/product-input";
+import { CategoryRepository } from "../repository/category-repository";
+import { products } from "../models";
 
 export class ProductService {
   _repository: ProductRepository;
@@ -17,6 +19,12 @@ export class ProductService {
     if (error) return ErrorResponse(404, error);
 
     const data = await this._repository.createProduct(input);
+    console.log(data);
+
+    await new CategoryRepository().addItem({
+      id: input.category_id,
+      products: [data._id],
+    });
     return SucessResponse(data);
   }
 
@@ -50,7 +58,14 @@ export class ProductService {
     const productId = event.pathParameters?.id;
     if (!productId) return ErrorResponse(403, "please provide product id");
 
-    const data = await this._repository.deleteProduct(productId);
-    return SucessResponse(data);
+    const { category_id, deleteResult } = await this._repository.deleteProduct(
+      productId
+    );
+    // await new CategoryRepository().addItem({
+    await new CategoryRepository().removeItem({
+      id: category_id,
+      products: [productId],
+    });
+    return SucessResponse(deleteResult);
   }
 }
