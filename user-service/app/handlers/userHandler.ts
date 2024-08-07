@@ -4,8 +4,11 @@ import { UserService } from "../service/userService";
 import { ErrorResponse } from "../utility/response";
 import middy from "@middy/core";
 import bodyParser from "@middy/http-json-body-parser";
+import { CartService } from "../service/cartService";
 
 const service = container.resolve(UserService);
+const cartService = container.resolve(CartService);
+
 
 export const Signup = middy((event: APIGatewayProxyEventV2) => {
   return service.CreateUser(event);
@@ -42,11 +45,13 @@ export const Profile = middy((event: APIGatewayProxyEventV2) => {
 export const Cart = middy((event: APIGatewayProxyEventV2) => {
   const httpMethod = event.requestContext.http.method.toLowerCase();
   if (httpMethod === "post") {
-    return service.CreateCart(event);
+    return cartService.CreateCart(event);
   } else if (httpMethod === "put") {
-    return service.UpdateCart(event);
+    return cartService.UpdateCart(event);
   } else if (httpMethod === "get") {
-    return service.GetCart(event);
+    return cartService.GetCart(event);
+  } else if (httpMethod === "delete") {
+    return cartService.DeleteCart(event);
   } else {
     return ErrorResponse(404, "requested method is not supported!");
   }

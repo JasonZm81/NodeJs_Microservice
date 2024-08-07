@@ -1,4 +1,4 @@
-import { APIGatewayEvent } from "aws-lambda";
+import { APIGatewayEvent, APIGatewayProxyEvent } from "aws-lambda";
 import { ProductRepository } from "../repository/product-repository";
 import { ErrorResponse, SucessResponse } from "../utility/response";
 import { plainToClass } from "class-transformer";
@@ -6,11 +6,16 @@ import { AppValidationError } from "../utility/errors";
 import { ProductInput } from "../dto/product-input";
 import { CategoryRepository } from "../repository/category-repository";
 import { products } from "../models";
+import { ServiceInput } from "../dto/service-input";
 
 export class ProductService {
   _repository: ProductRepository;
   constructor(repository: ProductRepository) {
     this._repository = repository;
+  }
+
+  async ResponseWithError(event: APIGatewayEvent) {
+    return ErrorResponse(404, new Error("method not allowed!"));
   }
 
   async createProduct(event: APIGatewayEvent) {
@@ -67,5 +72,26 @@ export class ProductService {
       products: [productId],
     });
     return SucessResponse(deleteResult);
+  }
+
+  // http calls // later will convert tis to RPC & Queue
+  async handleQueueOperation(event: APIGatewayProxyEvent) {
+    const input = plainToClass(ServiceInput, event.body);
+    const error = await AppValidationError(input);
+    if (error) return ErrorResponse(404, error);
+
+    console.log("INPUT", input);
+
+    // get product from product repo, then deconstruct it first to get properties we want
+    const { _id, name, price, image_url } =
+      await this._repository.getProductById(input.productId);
+    console.log("PRODUCT DETAILS", { _id, name, price, image_url});
+
+    return SucessResponse({
+      product_id: _id,
+      name,
+      price,
+      image_url,
+    });
   }
 }

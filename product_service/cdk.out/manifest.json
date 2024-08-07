@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3d41e22e68fedd5f3702847a0b4d8f685e3b4cfbea70ec6c846ba233c448bd64.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4273724641cb6fe802442dc82bd6c4df99ad4389e9f83da2b62e92dadcf03091.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -99,6 +99,18 @@
             "data": "ProductServiceimageUploadLambdaFB6CC065"
           }
         ],
+        "/ProductServiceStack/ProductService/msgQueueLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProductServicemsgQueueLambdaServiceRoleFA26C9FA"
+          }
+        ],
+        "/ProductServiceStack/ProductService/msgQueueLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProductServicemsgQueueLambda77C580EE"
+          }
+        ],
         "/ProductServiceStack/ProductApiGateway/product-ApiGtw/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -108,7 +120,7 @@
         "/ProductServiceStack/ProductApiGateway/product-ApiGtw/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ProductApiGatewayproductApiGtwDeploymentD17BF151af5a8bdcb334bf5208ff6ca081ff51c9"
+            "data": "ProductApiGatewayproductApiGtwDeploymentD17BF1519822ca3657920d891cd8a18c57dc3473"
           }
         ],
         "/ProductServiceStack/ProductApiGateway/product-ApiGtw/DeploymentStage.prod/Resource": [
@@ -451,6 +463,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ProductApiGatewayproductApiGtwuploaderGET63B3E815"
+          }
+        ],
+        "/ProductServiceStack/ProductApiGateway/product-ApiGtw/Default/products-queue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProductApiGatewayproductApiGtwproductsqueue1702BD25"
+          }
+        ],
+        "/ProductServiceStack/ProductApiGateway/product-ApiGtw/Default/products-queue/POST/ApiPermission.ProductServiceStackProductApiGatewayproductApiGtwABA7C1CB.POST..products-queue": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProductApiGatewayproductApiGtwproductsqueuePOSTApiPermissionProductServiceStackProductApiGatewayproductApiGtwABA7C1CBPOSTproductsqueue379FC608"
+          }
+        ],
+        "/ProductServiceStack/ProductApiGateway/product-ApiGtw/Default/products-queue/POST/ApiPermission.Test.ProductServiceStackProductApiGatewayproductApiGtwABA7C1CB.POST..products-queue": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProductApiGatewayproductApiGtwproductsqueuePOSTApiPermissionTestProductServiceStackProductApiGatewayproductApiGtwABA7C1CBPOSTproductsqueue6C060A45"
+          }
+        ],
+        "/ProductServiceStack/ProductApiGateway/product-ApiGtw/Default/products-queue/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProductApiGatewayproductApiGtwproductsqueuePOSTF9048F58"
           }
         ],
         "/ProductServiceStack/CDKMetadata/Default": [

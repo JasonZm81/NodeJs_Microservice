@@ -1,7 +1,7 @@
 CREATE TABLE "shopping_carts" (
     "cart_id" bigserial PRIMARY KEY,
     "user_id" bigint NOT NULL,
-    "created_at" timestamptz NOT NULL DEFAULT(now())
+    "create_at" timestamptz NOT NULL DEFAULT(now())
 );
 
 CREATE TABLE "cart_items" (
