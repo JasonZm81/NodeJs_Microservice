@@ -9,6 +9,16 @@ provider:
   region: us-east-1
   httpApi:
     cors: true
+  # SNS Topic
+  environment:
+    SNS_TOPIC: { Ref: CustomerTopic }
+  # giving permission
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action: 
+        - "sns: Publish"
+      Resource: 
+        - !Ref CustomerTopic
 
 custom:
   stage: "dev"
@@ -79,6 +89,30 @@ functions:
           path: /payment
           method: get
 
+  order:
+    handler: app/handler.CollectPayment
+    events:
+      - httpApi:
+          path: /place-order
+          method: post
+
 plugins:
   - serverless-offline
   - serverless-plugin-typescript
+
+# create resource
+resources:
+  Resources:
+    CustomerTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: "customer sns topic description"
+        TopicName: CustomerTopic
+          
+  # output resource info for later usages
+  Outputs:
+    CustomerTopicInfo:
+      Description: customer-topic
+      Value: !Ref CustomerTopic
+      Export:
+        Name: customer-topic

@@ -21,9 +21,10 @@ import {
 import { TimeDifference } from "../utility/dateHelper";
 import { ProfileInput } from "../models/dto/AddressInput";
 import { CartRepository } from "../repository/cartRepository";
-import { CartInput } from "../models/dto/cartInput";
+import { CartInput, UpdateCartInput } from "../models/dto/cartInput";
 import { CartItemModel } from "../models/CartItemsModel";
 import { PullData } from "../message-queue";
+import aws from 'aws-sdk';
 
 @autoInjectable()
 export class CartService {
@@ -81,11 +82,10 @@ export class CartService {
 
         // convert the data to CartItemModel
         let cartItem = data.data as CartItemModel;
-          cartItem.cart_id = currentCart.cart_id;
-          cartItem.item_qty = input.qty;
-          // finally create cart item
-          await this.repository.createCartItem(cartItem);
-        
+        cartItem.cart_id = currentCart.cart_id;
+        cartItem.item_qty = input.qty;
+        // finally create cart item
+        await this.repository.createCartItem(cartItem);
       }
       // return all cart items to client
       const cartItems = await this.repository.findCartItemsByCartId(
@@ -97,19 +97,101 @@ export class CartService {
       console.log(error);
       return ErrorResponse(500, error);
     }
-
-    return SucessResponse({ message: "response from Create Cart" });
   }
 
   async GetCart(event: APIGatewayProxyEventV2) {
-    return SucessResponse({ message: "response from Get Cart" });
+    try {
+      const token = event.headers.authorization;
+      const payload = await VerifyToken(token);
+      if (!payload) return ErrorResponse(403, "authorization failed!");
+      const result = await this.repository.findCartItems(payload.user_id);
+      return SucessResponse(result);
+    } catch (error) {
+      console.log(error);
+      return ErrorResponse(500, error);
+    }
   }
 
   async UpdateCart(event: APIGatewayProxyEventV2) {
-    return SucessResponse({ message: "response from Update Cart" });
+    // get user token, validate input
+    try {
+      const token = event.headers.authorization;
+      const payload = await VerifyToken(token);
+      const cartItemId = Number(event.pathParameters.id);
+      if (!payload) return ErrorResponse(403, "authorization failed!");
+
+      // cart input
+      const input = plainToClass(UpdateCartInput, event.body);
+      const error = await AppValidationError(input);
+      if (error) return ErrorResponse(404, error);
+
+      // getting cart item
+      const cartItem = await this.repository.updateCartItemById(
+        cartItemId,
+        input.qty
+      );
+      if (cartItem) {
+        return SucessResponse(cartItem);
+      }
+      return ErrorResponse(404, "item does not exist");
+    } catch (error) {
+      console.log(error);
+      return ErrorResponse(500, error);
+    }
   }
 
   async DeleteCart(event: APIGatewayProxyEventV2) {
-    return SucessResponse({ message: "response from Update Cart" });
+    // get user token, validate input
+    try {
+      const token = event.headers.authorization;
+      const payload = await VerifyToken(token);
+      const cartItemId = Number(event.pathParameters.id);
+      if (!payload) return ErrorResponse(403, "authorization failed!");
+
+      // getting cart item
+      const deletedItem = await this.repository.deleteCartItem(cartItemId);
+      return SucessResponse(deletedItem);
+    } catch (error) {
+      console.log(error);
+      return ErrorResponse(500, error);
+    }
+  }
+
+  async CollectPayment(event: APIGatewayProxyEventV2) {
+    try {
+      const token = event.headers.authorization;
+      const payload = await VerifyToken(token);    
+      // initialize Payment gateway
+
+
+      // authenticate payment confirmation
+
+      // get cart item
+      
+      if (!payload) return ErrorResponse(403, "authorization failed!");
+      const cartItems = await this.repository.findCartItems(payload.user_id);
+
+      // send sns topic to create Order [Transaction Microservice] => email to user
+      const params = {
+        Message: JSON.stringify(cartItems),
+        TopicArn: process.env.SNS_TOPIC,
+        MessageAttributes: {
+          // for subscriber to filter based on these
+          actionType: {
+            DataType: "String",
+            StringValue: "place_order",
+          },
+        },
+      };
+      const sns = new aws.SNS();
+      const response = await sns.publish(params).promise();
+
+      //send tentative message to user
+
+      return SucessResponse({ msg: "Payment Processing...", response});
+    } catch (error) {
+      console.log(error);
+      return ErrorResponse(500, error);
+    }
   }
 }

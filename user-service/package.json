@@ -12,7 +12,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/aws-lambda": "^8.10.142",
-    "@types/bcrypt": "^5.0.2",
+    "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "9.0.0",
     "@types/pg": "^8.11.6",
     "serverless-offline": "^12.0.3",
@@ -22,7 +22,8 @@
     "@middy/core": "4.0.9",
     "@middy/http-json-body-parser": "4.0.9",
     "aws-lambda": "^1.0.7",
-    "bcrypt": "^5.1.1",
+    "aws-sdk": "^2.1670.0",
+    "bcryptjs": "^2.4.3",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.0",
     "dayjs": "^1.11.12",

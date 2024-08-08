@@ -88,22 +88,79 @@ let CartService = class CartService {
                 console.log(error);
                 return (0, response_1.ErrorResponse)(500, error);
             }
-            return (0, response_1.SucessResponse)({ message: "response from Create Cart" });
         });
     }
     GetCart(event) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (0, response_1.SucessResponse)({ message: "response from Get Cart" });
+            try {
+                const token = event.headers.authorization;
+                const payload = yield (0, password_1.VerifyToken)(token);
+                if (!payload)
+                    return (0, response_1.ErrorResponse)(403, "authorization failed!");
+                const result = yield this.repository.findCartItems(payload.user_id);
+                return (0, response_1.SucessResponse)(result);
+            }
+            catch (error) {
+                console.log(error);
+                return (0, response_1.ErrorResponse)(500, error);
+            }
         });
     }
     UpdateCart(event) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (0, response_1.SucessResponse)({ message: "response from Update Cart" });
+            // get user token, validate input
+            try {
+                const token = event.headers.authorization;
+                const payload = yield (0, password_1.VerifyToken)(token);
+                const cartItemId = Number(event.pathParameters.id);
+                if (!payload)
+                    return (0, response_1.ErrorResponse)(403, "authorization failed!");
+                // cart input
+                const input = (0, class_transformer_1.plainToClass)(cartInput_1.UpdateCartInput, event.body);
+                const error = yield (0, errors_1.AppValidationError)(input);
+                if (error)
+                    return (0, response_1.ErrorResponse)(404, error);
+                // getting cart item
+                const cartItem = yield this.repository.updateCartItemById(cartItemId, input.qty);
+                if (cartItem) {
+                    return (0, response_1.SucessResponse)(cartItem);
+                }
+                return (0, response_1.ErrorResponse)(404, "item does not exist");
+            }
+            catch (error) {
+                console.log(error);
+                return (0, response_1.ErrorResponse)(500, error);
+            }
         });
     }
     DeleteCart(event) {
         return __awaiter(this, void 0, void 0, function* () {
-            return (0, response_1.SucessResponse)({ message: "response from Update Cart" });
+            // get user token, validate input
+            try {
+                const token = event.headers.authorization;
+                const payload = yield (0, password_1.VerifyToken)(token);
+                const cartItemId = Number(event.pathParameters.id);
+                if (!payload)
+                    return (0, response_1.ErrorResponse)(403, "authorization failed!");
+                // getting cart item
+                const deletedItem = yield this.repository.deleteCartItem(cartItemId);
+                return (0, response_1.SucessResponse)(deletedItem);
+            }
+            catch (error) {
+                console.log(error);
+                return (0, response_1.ErrorResponse)(500, error);
+            }
+        });
+    }
+    CollectPayment(event) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                return (0, response_1.SucessResponse)({ msg: "Payment Processing..." });
+            }
+            catch (error) {
+                console.log(error);
+                return (0, response_1.ErrorResponse)(500, error);
+            }
         });
     }
 };

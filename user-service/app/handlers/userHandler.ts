@@ -25,7 +25,7 @@ export const Verify = middy((event: APIGatewayProxyEventV2) => {
   } else if (httpMethod === "get") {
     return service.GetVerificationToken(event);
   } else {
-    return ErrorResponse(404, "requested method is not supported!");
+    return service.ResponseWithError(event);
   }
 }).use(bodyParser());
 
@@ -38,7 +38,7 @@ export const Profile = middy((event: APIGatewayProxyEventV2) => {
   } else if (httpMethod === "get") {
     return service.GetProfile(event);
   } else {
-    return ErrorResponse(404, "requested method is not supported!");
+    return service.ResponseWithError(event);
   }
 }).use(bodyParser());
 
@@ -53,8 +53,12 @@ export const Cart = middy((event: APIGatewayProxyEventV2) => {
   } else if (httpMethod === "delete") {
     return cartService.DeleteCart(event);
   } else {
-    return ErrorResponse(404, "requested method is not supported!");
+    return service.ResponseWithError(event);
   }
+}).use(bodyParser());
+
+export const CollectPayment = middy((event: APIGatewayProxyEventV2) => {
+  return cartService.CollectPayment(event);
 }).use(bodyParser());
 
 export const Payment = middy((event: APIGatewayProxyEventV2) => {
@@ -66,6 +70,6 @@ export const Payment = middy((event: APIGatewayProxyEventV2) => {
   } else if (httpMethod === "get") {
     return service.GetPaymentMethod(event);
   } else {
-    return ErrorResponse(404, "requested method is not supported!");
+    return service.ResponseWithError(event);
   }
 }).use(bodyParser());
