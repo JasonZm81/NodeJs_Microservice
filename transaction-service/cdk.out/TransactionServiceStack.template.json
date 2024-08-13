@@ -1,0 +1,463 @@
+{
+ "Resources": {
+  "orderqueueBC01900A": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "VisibilityTimeout": 300
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "TransactionServiceStack/order_queue/Resource"
+   }
+  },
+  "orderqueuePolicy4169529F": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Condition": {
+        "ArnEquals": {
+         "aws:SourceArn": {
+          "Fn::ImportValue": "customer-topic"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "sns.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "orderqueueBC01900A",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "orderqueueBC01900A"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TransactionServiceStack/order_queue/Policy/Resource"
+   }
+  },
+  "orderqueueTransactionServiceStackorderconsumetopicB38EA44C5FB92856": {
+   "Type": "AWS::SNS::Subscription",
+   "Properties": {
+    "Endpoint": {
+     "Fn::GetAtt": [
+      "orderqueueBC01900A",
+      "Arn"
+     ]
+    },
+    "FilterPolicy": {
+     "actionType": [
+      "place_order"
+     ]
+    },
+    "Protocol": "sqs",
+    "RawMessageDelivery": true,
+    "Region": {
+     "Fn::Select": [
+      3,
+      {
+       "Fn::Split": [
+        ":",
+        {
+         "Fn::ImportValue": "customer-topic"
+        }
+       ]
+      }
+     ]
+    },
+    "TopicArn": {
+     "Fn::ImportValue": "customer-topic"
+    }
+   },
+   "DependsOn": [
+    "orderqueuePolicy4169529F"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "TransactionServiceStack/order_queue/TransactionServiceStackorderconsumetopicB38EA44C/Resource"
+   }
+  },
+  "createorderhandlerServiceRole1BE496FA": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TransactionServiceStack/create-order-handler/ServiceRole/Resource"
+   }
+  },
+  "createorderhandlerServiceRoleDefaultPolicy447C1670": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sqs:ChangeMessageVisibility",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ReceiveMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "orderqueueBC01900A",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "createorderhandlerServiceRoleDefaultPolicy447C1670",
+    "Roles": [
+     {
+      "Ref": "createorderhandlerServiceRole1BE496FA"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TransactionServiceStack/create-order-handler/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "createorderhandler907D3423": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "dc7045a84ba7172258298c344ef9881b30291aacaa55882ae70604dcba910952.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "createorderhandlerServiceRole1BE496FA",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 10
+   },
+   "DependsOn": [
+    "createorderhandlerServiceRoleDefaultPolicy447C1670",
+    "createorderhandlerServiceRole1BE496FA"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "TransactionServiceStack/create-order-handler/Resource",
+    "aws:asset:path": "/Users/cchooi/Desktop/NodeJs_Microservice/transaction-service",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "createorderhandlerSqsEventSourceTransactionServiceStackorderqueue331DF2D5C76EC0A3": {
+   "Type": "AWS::Lambda::EventSourceMapping",
+   "Properties": {
+    "EventSourceArn": {
+     "Fn::GetAtt": [
+      "orderqueueBC01900A",
+      "Arn"
+     ]
+    },
+    "FunctionName": {
+     "Ref": "createorderhandler907D3423"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TransactionServiceStack/create-order-handler/SqsEventSource:TransactionServiceStackorderqueue331DF2D5/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/2WPzU7DMBCEn6V3Z2lakLjSCG4gSLhHjuNUm591yNqtkOV3R3aqIMTF450dfaM9QP6Qw34nr5ypdshGbMBXVqpByCvXnr8Y/IfTTouio/WT3nczovrezHUMgonBV65hteBs0VBM/Jk/zYzqJFkHMcqpaWVNptU9w1uSF0cq5VBO4EszpuKkv5Vb27GWzNoyPEURfISTU4O2kX/Dgy862qjPF022Mm5R+lXOM9I58v67IYhSc3JEYldWnm/pbVF0VBhqMZKDiGdAz3eX/BEOe7jf9YyYLY4sThrKVX8AJdYgcnABAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "TransactionServiceStack/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "il-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-2"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

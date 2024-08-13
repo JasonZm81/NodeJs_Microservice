@@ -1,13 +1,18 @@
-import { Client } from 'pg';
-import fs from 'fs';
-import path from 'path';
+import { Client } from "pg";
 
 export const DBClient = () => {
+  // return new Client({
+  //   host: "ec2-107-23-226-59.compute-1.amazonaws.com",
+  //   user: "user_service",
+  //   database: "user_service",
+  //   password: "user_service123",
+  //   port: 5432,
+  // });
   return new Client({
-    host: "ec2-54-158-201-214.compute-1.amazonaws.com",
-    user: "user_service",
+    user: "root",
+    host: "127.0.0.1",
     database: "user_service",
-    password: "user_service123",
+    password: "root",
     port: 5432,
   });
 };

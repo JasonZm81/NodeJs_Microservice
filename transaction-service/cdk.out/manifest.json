@@ -1,0 +1,145 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "TransactionServiceStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "TransactionServiceStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "TransactionServiceStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "TransactionServiceStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8ff98642b5ceaa59215cf7266cd5e8ec799d243de4924a4101676f13dfedc0d7.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "TransactionServiceStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "TransactionServiceStack.assets"
+      ],
+      "metadata": {
+        "/TransactionServiceStack": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower. [ack: @aws-cdk/aws-lambda-nodejs:sdkV2NotInRuntime]",
+            "trace": [
+              "Annotations.addMessage (/Users/cchooi/Desktop/NodeJs_Microservice/transaction-service/node_modules/aws-cdk-lib/core/lib/annotations.js:1:1608)",
+              "Annotations.addWarningV2 (/Users/cchooi/Desktop/NodeJs_Microservice/transaction-service/node_modules/aws-cdk-lib/core/lib/annotations.js:1:825)",
+              "new Bundling (/Users/cchooi/Desktop/NodeJs_Microservice/transaction-service/node_modules/aws-cdk-lib/aws-lambda-nodejs/lib/bundling.js:1:3534)",
+              "Function.bundle (/Users/cchooi/Desktop/NodeJs_Microservice/transaction-service/node_modules/aws-cdk-lib/aws-lambda-nodejs/lib/bundling.js:1:991)",
+              "new NodejsFunction (/Users/cchooi/Desktop/NodeJs_Microservice/transaction-service/node_modules/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:1:2171)",
+              "new TransactionServiceStack (/Users/cchooi/Desktop/NodeJs_Microservice/transaction-service/lib/transaction-service-stack.ts:50:32)",
+              "Object.<anonymous> (/Users/cchooi/Desktop/NodeJs_Microservice/transaction-service/bin/transaction-service.ts:7:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1364:14)",
+              "Module.m._compile (/Users/cchooi/Desktop/NodeJs_Microservice/transaction-service/node_modules/ts-node/src/index.ts:1618:23)",
+              "Module._extensions..js (node:internal/modules/cjs/loader:1422:10)",
+              "Object.require.extensions.<computed> [as .ts] (/Users/cchooi/Desktop/NodeJs_Microservice/transaction-service/node_modules/ts-node/src/index.ts:1621:12)",
+              "Module.load (node:internal/modules/cjs/loader:1203:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:1019:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)",
+              "phase4 (/Users/cchooi/Desktop/NodeJs_Microservice/transaction-service/node_modules/ts-node/src/bin.ts:649:14)",
+              "bootstrap (/Users/cchooi/Desktop/NodeJs_Microservice/transaction-service/node_modules/ts-node/src/bin.ts:95:10)",
+              "main (/Users/cchooi/Desktop/NodeJs_Microservice/transaction-service/node_modules/ts-node/src/bin.ts:55:10)",
+              "Object.<anonymous> (/Users/cchooi/Desktop/NodeJs_Microservice/transaction-service/node_modules/ts-node/src/bin.ts:800:3)",
+              "Module._compile (node:internal/modules/cjs/loader:1364:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1422:10)",
+              "Module.load (node:internal/modules/cjs/loader:1203:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:1019:12)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)",
+              "node:internal/main/run_main_module:28:49"
+            ]
+          }
+        ],
+        "/TransactionServiceStack/order_queue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "orderqueueBC01900A"
+          }
+        ],
+        "/TransactionServiceStack/order_queue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "orderqueuePolicy4169529F"
+          }
+        ],
+        "/TransactionServiceStack/order_queue/TransactionServiceStackorderconsumetopicB38EA44C/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "orderqueueTransactionServiceStackorderconsumetopicB38EA44C5FB92856"
+          }
+        ],
+        "/TransactionServiceStack/create-order-handler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "createorderhandlerServiceRole1BE496FA"
+          }
+        ],
+        "/TransactionServiceStack/create-order-handler/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "createorderhandlerServiceRoleDefaultPolicy447C1670"
+          }
+        ],
+        "/TransactionServiceStack/create-order-handler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "createorderhandler907D3423"
+          }
+        ],
+        "/TransactionServiceStack/create-order-handler/SqsEventSource:TransactionServiceStackorderqueue331DF2D5/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "createorderhandlerSqsEventSourceTransactionServiceStackorderqueue331DF2D5C76EC0A3"
+          }
+        ],
+        "/TransactionServiceStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/TransactionServiceStack/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/TransactionServiceStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/TransactionServiceStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "TransactionServiceStack"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

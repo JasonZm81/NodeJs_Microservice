@@ -20,6 +20,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CartService = void 0;
 const response_1 = require("../utility/response");
+const userRepository_1 = require("../repository/userRepository");
 const tsyringe_1 = require("tsyringe");
 const class_transformer_1 = require("class-transformer");
 const errors_1 = require("../utility/errors");
@@ -27,6 +28,7 @@ const password_1 = require("../utility/password");
 const cartRepository_1 = require("../repository/cartRepository");
 const cartInput_1 = require("../models/dto/cartInput");
 const message_queue_1 = require("../message-queue");
+const payment_1 = require("../utility/payment");
 let CartService = class CartService {
     constructor(repository) {
         this.repository = repository;
@@ -97,8 +99,10 @@ let CartService = class CartService {
                 const payload = yield (0, password_1.VerifyToken)(token);
                 if (!payload)
                     return (0, response_1.ErrorResponse)(403, "authorization failed!");
-                const result = yield this.repository.findCartItems(payload.user_id);
-                return (0, response_1.SucessResponse)(result);
+                const cartItems = yield this.repository.findCartItems(payload.user_id);
+                const totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.item_qty, 0);
+                const appFee = (0, payment_1.APPLICATION_FEE)(totalAmount) + (0, payment_1.STRIPE_FEE)(totalAmount);
+                return (0, response_1.SucessResponse)({ cartItems, totalAmount, appFee });
             }
             catch (error) {
                 console.log(error);
@@ -155,12 +159,71 @@ let CartService = class CartService {
     CollectPayment(event) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return (0, response_1.SucessResponse)({ msg: "Payment Processing..." });
+                const token = event.headers.authorization;
+                const payload = yield (0, password_1.VerifyToken)(token);
+                if (!payload)
+                    return (0, response_1.ErrorResponse)(403, "authorization failed!");
+                // get user details
+                const { stripe_id, email, phone } = yield new userRepository_1.UserRepository().getUserProfile(payload.user_id);
+                const cartItems = yield this.repository.findCartItems(payload.user_id);
+                const total = cartItems.reduce((sum, item) => sum + item.price * item.item_qty, 0);
+                const appFee = (0, payment_1.APPLICATION_FEE)(total);
+                const stripeFee = (0, payment_1.STRIPE_FEE)(total);
+                const amount = total + appFee + stripeFee;
+                // initialize Payment gateway
+                const { secret, publishableKey, customerId, paymentId } = yield (0, payment_1.CreatePaymentSession)({
+                    amount,
+                    email,
+                    phone,
+                    // optional parameter always keep as last
+                    customerId: stripe_id,
+                });
+                yield new userRepository_1.UserRepository().updateUserPayment({
+                    userId: payload.user_id,
+                    customerId,
+                    paymentId,
+                });
+                // authenticate payment confirmation
+                return (0, response_1.SucessResponse)({ secret, publishableKey });
             }
             catch (error) {
                 console.log(error);
                 return (0, response_1.ErrorResponse)(500, error);
             }
+        });
+    }
+    PlaceOrder(event) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // get cart item
+            const token = event.headers.authorization;
+            const payload = yield (0, password_1.VerifyToken)(token);
+            if (!payload)
+                return (0, response_1.ErrorResponse)(403, "authorization failed!");
+            const { payment_id } = yield new userRepository_1.UserRepository().getUserProfile(payload.user_id);
+            console.log(payment_id);
+            const paymentInfo = yield (0, payment_1.RetrivePayment)(payment_id);
+            console.log(paymentInfo);
+            if (paymentInfo.status === "succeeded") {
+                // const cartItems = await this.repository.findCartItems(payload.user_id);
+                // // send sns topic to create Order [Transaction Microservice] => email to user
+                // const params = {
+                //   Message: JSON.stringify(cartItems),
+                //   TopicArn: process.env.SNS_TOPIC,
+                //   MessageAttributes: {
+                //     // for subscriber to filter based on these
+                //     actionType: {
+                //       DataType: "String",
+                //       StringValue: "place_order",
+                //     },
+                //   },
+                // };
+                // const sns = new aws.SNS();
+                // const response = await sns.publish(params).promise();
+                // console.log(response);
+                // //send tentative message to user
+                return (0, response_1.SucessResponse)({ msg: "success", paymentInfo });
+            }
+            return (0, response_1.ErrorResponse)(503, new Error("payment failed!"));
         });
     }
 };

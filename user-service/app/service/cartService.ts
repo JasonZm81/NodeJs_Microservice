@@ -24,7 +24,14 @@ import { CartRepository } from "../repository/cartRepository";
 import { CartInput, UpdateCartInput } from "../models/dto/cartInput";
 import { CartItemModel } from "../models/CartItemsModel";
 import { PullData } from "../message-queue";
-import aws from 'aws-sdk';
+import aws from "aws-sdk";
+import {
+  APPLICATION_FEE,
+  CreatePaymentSession,
+  RetrivePayment,
+  STRIPE_FEE,
+} from "../utility/payment";
+import { CreatePayment } from "../handler";
 
 @autoInjectable()
 export class CartService {
@@ -104,8 +111,15 @@ export class CartService {
       const token = event.headers.authorization;
       const payload = await VerifyToken(token);
       if (!payload) return ErrorResponse(403, "authorization failed!");
-      const result = await this.repository.findCartItems(payload.user_id);
-      return SucessResponse(result);
+      const cartItems = await this.repository.findCartItems(payload.user_id);
+      const totalAmount = cartItems.reduce(
+        (sum, item) => sum + item.price * item.item_qty,
+        0
+      );
+
+      const appFee = APPLICATION_FEE(totalAmount) + STRIPE_FEE(totalAmount);
+      
+      return SucessResponse({ cartItems, totalAmount, appFee });
     } catch (error) {
       console.log(error);
       return ErrorResponse(500, error);
@@ -160,38 +174,85 @@ export class CartService {
   async CollectPayment(event: APIGatewayProxyEventV2) {
     try {
       const token = event.headers.authorization;
-      const payload = await VerifyToken(token);    
-      // initialize Payment gateway
+      const payload = await VerifyToken(token);
+      if (!payload) return ErrorResponse(403, "authorization failed!");
 
+      // get user details
+      const { stripe_id, email, phone } =
+        await new UserRepository().getUserProfile(payload.user_id);
+
+      const cartItems = await this.repository.findCartItems(payload.user_id);
+      const total = cartItems.reduce(
+        (sum, item) => sum + item.price * item.item_qty,
+        0
+      );
+
+      const appFee = APPLICATION_FEE(total);
+      const stripeFee = STRIPE_FEE(total);
+      const amount = total + appFee + stripeFee;
+
+      // initialize Payment gateway
+      const { secret, publishableKey, customerId, paymentId } = await CreatePaymentSession({
+        amount,
+        email,
+        phone,
+        // optional parameter always keep as last
+        customerId: stripe_id,
+    })
+
+      await new UserRepository().updateUserPayment({
+        userId: payload.user_id,
+        customerId,
+        paymentId,
+      });
 
       // authenticate payment confirmation
-
-      // get cart item
-      
-      if (!payload) return ErrorResponse(403, "authorization failed!");
-      const cartItems = await this.repository.findCartItems(payload.user_id);
-
-      // send sns topic to create Order [Transaction Microservice] => email to user
-      const params = {
-        Message: JSON.stringify(cartItems),
-        TopicArn: process.env.SNS_TOPIC,
-        MessageAttributes: {
-          // for subscriber to filter based on these
-          actionType: {
-            DataType: "String",
-            StringValue: "place_order",
-          },
-        },
-      };
-      const sns = new aws.SNS();
-      const response = await sns.publish(params).promise();
-
-      //send tentative message to user
-
-      return SucessResponse({ msg: "Payment Processing...", response});
+      return SucessResponse({  secret, publishableKey });
     } catch (error) {
       console.log(error);
       return ErrorResponse(500, error);
     }
+  }
+
+  async PlaceOrder(event: APIGatewayProxyEventV2) {
+    // get cart item
+    const token = event.headers.authorization;
+    const payload = await VerifyToken(token);
+    if (!payload) return ErrorResponse(403, "authorization failed!");
+    
+    const { payment_id } = await new UserRepository().getUserProfile(
+      payload.user_id
+    );
+
+    console.log(payment_id);
+
+    const paymentInfo = await RetrivePayment(payment_id);
+    console.log(paymentInfo);
+
+    if (paymentInfo.status === "succeeded") {
+    // const cartItems = await this.repository.findCartItems(payload.user_id);
+    
+    // // send sns topic to create Order [Transaction Microservice] => email to user
+    // const params = {
+    //   Message: JSON.stringify(cartItems),
+    //   TopicArn: process.env.SNS_TOPIC,
+    //   MessageAttributes: {
+    //     // for subscriber to filter based on these
+    //     actionType: {
+    //       DataType: "String",
+    //       StringValue: "place_order",
+    //     },
+    //   },
+    // };
+    // const sns = new aws.SNS();
+    // const response = await sns.publish(params).promise();
+    // console.log(response);
+
+    // //send tentative message to user
+
+    return SucessResponse({ msg: "success", paymentInfo });
+    }
+
+    return ErrorResponse(503, new Error("payment failed!"));
   }
 }

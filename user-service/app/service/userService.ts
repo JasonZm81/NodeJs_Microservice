@@ -32,14 +32,9 @@ export class UserService {
     return ErrorResponse(404, "requested method is not supported!");
   }
 
-     // export class UserService {
-  //   constructor() {}
-
   // User Creation, Validation & Login
   async CreateUser(event: APIGatewayProxyEventV2) {
     try {
-        //b4 create the user, need to validate the user input.
-      // transform the input data type to required type
       const input = plainToClass(SignupInput, event.body);
       const error = await AppValidationError(input);
       if (error) return ErrorResponse(404, error);
@@ -53,9 +48,7 @@ export class UserService {
         userType: "BUYER",
         salt: salt,
       });
-      // const body = JSON.parse(event.body);
-      // const body = event.body;
-      // console.log(body);
+
       return SucessResponse(data);
     } catch (error) {
       console.log(error);
@@ -68,9 +61,7 @@ export class UserService {
       const input = plainToClass(LoginInput, event.body);
       const error = await AppValidationError(input);
       if (error) return ErrorResponse(404, error);
-      // check the email
       const data = await this.repository.findAccount(input.email);
-      //check or validate password
       const verified = await ValidatePassword(
         input.password,
         data.password,
@@ -89,17 +80,15 @@ export class UserService {
   }
 
   async GetVerificationToken(event: APIGatewayProxyEventV2) {
-    //as shown in demo, postman copy paste the token
     const token = event.headers.authorization;
     const payload = await VerifyToken(token);
 
     if (!payload) return ErrorResponse(403, "authorization failed!");
 
     const { code, expiry } = GenerateAccessCode();
-    //save confirmed verification to DB
     await this.repository.updateVerificationCode(payload.user_id, code, expiry);
-    // const response = await SendVerificationCode(code, payload.phone);
-    //the token
+
+    // await SendVerificationCode(code, payload.phone);
 
     return SucessResponse({
       message: "verification code is sent to your registered mobile number!",
@@ -115,11 +104,10 @@ export class UserService {
     const error = await AppValidationError(input);
     if (error) return ErrorResponse(404, error);
 
-    // find user account with destructuring payload properties that containes verification_code, expiry
     const { verification_code, expiry } = await this.repository.findAccount(
       payload.email
     );
-    // check code is same or not
+    // find the user account
     if (verification_code === parseInt(input.code)) {
       // check expiry
       const currentTime = new Date();
@@ -128,7 +116,6 @@ export class UserService {
 
       if (diff > 0) {
         console.log("verified successfully!");
-        // update on DB
         await this.repository.updateVerifyUser(payload.user_id);
       } else {
         return ErrorResponse(403, "verification code is expired!");
@@ -147,9 +134,7 @@ export class UserService {
       const input = plainToClass(ProfileInput, event.body);
       const error = await AppValidationError(input);
       if (error) return ErrorResponse(404, error);
-      
-        // DB operation, create profile has 2 operations
-      // user table(user_id, first_name, lastname) & user_address table(...)
+
       const result = await this.repository.createProfile(
         payload.user_id,
         input

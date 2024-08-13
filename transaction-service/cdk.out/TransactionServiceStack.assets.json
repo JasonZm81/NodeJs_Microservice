@@ -1,0 +1,32 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "dc7045a84ba7172258298c344ef9881b30291aacaa55882ae70604dcba910952": {
+      "source": {
+        "path": "/Users/cchooi/Desktop/NodeJs_Microservice/transaction-service",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "dc7045a84ba7172258298c344ef9881b30291aacaa55882ae70604dcba910952.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "8ff98642b5ceaa59215cf7266cd5e8ec799d243de4924a4101676f13dfedc0d7": {
+      "source": {
+        "path": "TransactionServiceStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8ff98642b5ceaa59215cf7266cd5e8ec799d243de4924a4101676f13dfedc0d7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

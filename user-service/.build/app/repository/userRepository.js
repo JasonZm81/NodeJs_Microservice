@@ -17,9 +17,8 @@ class UserRepository extends dbOperation_1.DBOperation {
     }
     createAccount({ phone, email, password, salt, userType }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const queryString = "INSERT INTO users(phone, email, password, salt, user_type) VALUES($1,$2,$3,$4,$5) RETURNING *";
+            const queryString = "INSERT INTO users(phone,email,password,salt,user_type) VALUES($1,$2,$3,$4,$5) RETURNING *";
             const values = [phone, email, password, salt, userType];
-            //insert data
             const result = yield this.executeQuery(queryString, values);
             if (result.rowCount > 0) {
                 return result.rows[0];
@@ -28,12 +27,11 @@ class UserRepository extends dbOperation_1.DBOperation {
     }
     findAccount(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            const queryString = "SELECT user_id, phone, email, password, salt, verification_code, expiry  FROM users WHERE email = $1";
+            const queryString = "SELECT user_id, email, password, phone, salt, verification_code, expiry FROM users WHERE email = $1";
             const values = [email];
-            //insert data
             const result = yield this.executeQuery(queryString, values);
             if (result.rowCount < 1) {
-                throw new Error("users does not exist with provided email id");
+                throw new Error("user does not exist with provided email id!");
             }
             return result.rows[0];
         });
@@ -42,7 +40,6 @@ class UserRepository extends dbOperation_1.DBOperation {
         return __awaiter(this, void 0, void 0, function* () {
             const queryString = "UPDATE users SET verification_code=$1, expiry=$2 WHERE user_id=$3 AND verified=FALSE RETURNING *";
             const values = [code, expiry, userId];
-            //insert data
             const result = yield this.executeQuery(queryString, values);
             if (result.rowCount > 0) {
                 return result.rows[0];
@@ -54,7 +51,6 @@ class UserRepository extends dbOperation_1.DBOperation {
         return __awaiter(this, void 0, void 0, function* () {
             const queryString = "UPDATE users SET verified=TRUE WHERE user_id=$1 AND verified=FALSE RETURNING *";
             const values = [userId];
-            //insert data
             const result = yield this.executeQuery(queryString, values);
             if (result.rowCount > 0) {
                 return result.rows[0];
@@ -66,7 +62,6 @@ class UserRepository extends dbOperation_1.DBOperation {
         return __awaiter(this, void 0, void 0, function* () {
             const queryString = "UPDATE users SET first_name=$1, last_name=$2, user_type=$3 WHERE user_id=$4 RETURNING *";
             const values = [firstName, lastName, userType, user_id];
-            //insert data
             const result = yield this.executeQuery(queryString, values);
             if (result.rowCount > 0) {
                 return result.rows[0];
@@ -74,12 +69,18 @@ class UserRepository extends dbOperation_1.DBOperation {
             throw new Error("error while updating user!");
         });
     }
-    createProfile(user_id, { firstName, lastName, userType, address: { addressLine1, addressLine2, city, postCode, country } }) {
+    createProfile(user_id, { firstName, lastName, userType, address: { addressLine1, addressLine2, city, postCode, country }, }) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.updateUser(user_id, firstName, lastName, userType);
-            const queryString = "INSERT INTO address(user_id, address_line1, address_line2, city, post_code, country) VALUES($1,$2,$3,$4,$5,$6) RETURNING *";
-            const values = [user_id, addressLine1, addressLine2, city, postCode, country];
-            //insert data
+            const queryString = "INSERT INTO address(user_id, address_line1,address_line2,city,post_code,country) VALUES($1,$2,$3,$4,$5,$6) RETURNING *";
+            const values = [
+                user_id,
+                addressLine1,
+                addressLine2,
+                city,
+                postCode,
+                country,
+            ];
             const result = yield this.executeQuery(queryString, values);
             if (result.rowCount > 0) {
                 return result.rows[0];
@@ -89,7 +90,7 @@ class UserRepository extends dbOperation_1.DBOperation {
     }
     getUserProfile(user_id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const profileQuery = "SELECT first_name, last_name, email, phone, user_type, verified FROM users WHERE user_id=$1";
+            const profileQuery = "SELECT first_name, last_name, email, phone, user_type, verified, stripe_id, payment_id FROM users WHERE user_id=$1";
             const profileValues = [user_id];
             const profileResult = yield this.executeQuery(profileQuery, profileValues);
             if (profileResult.rowCount < 1) {
@@ -102,7 +103,6 @@ class UserRepository extends dbOperation_1.DBOperation {
             if (addressResult.rowCount > 0) {
                 userProfile.address = addressResult.rows;
             }
-            // if no address, then only return user profile without address
             return userProfile;
         });
     }
@@ -123,6 +123,17 @@ class UserRepository extends dbOperation_1.DBOperation {
                 throw new Error("error while updating profile!");
             }
             return true;
+        });
+    }
+    updateUserPayment({ userId, paymentId, customerId, }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const queryString = "UPDATE users SET stripe_id=$1, payment_id=$2 WHERE user_id=$3 RETURNING *";
+            const values = [customerId, paymentId, userId];
+            const result = yield this.executeQuery(queryString, values);
+            if (result.rowCount > 0) {
+                return result.rows[0];
+            }
+            throw new Error("error while updating user payment!");
         });
     }
 }

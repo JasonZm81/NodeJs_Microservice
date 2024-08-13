@@ -17,7 +17,7 @@ class CartRepository extends dbOperation_1.DBOperation {
     }
     findShoppingCart(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const queryString = "SELECT cart_id, user_id FROM shopping_carts WHERE user_id = $1";
+            const queryString = "SELECT cart_id, user_id FROM shopping_carts WHERE user_id=$1";
             const values = [userId];
             const result = yield this.executeQuery(queryString, values);
             return result.rowCount > 0 ? result.rows[0] : false;
@@ -32,8 +32,7 @@ class CartRepository extends dbOperation_1.DBOperation {
         });
     }
     findCartItemById(cartId) {
-        return __awaiter(this, void 0, void 0, function* () {
-        });
+        return __awaiter(this, void 0, void 0, function* () { });
     }
     findCartItemByProductId(productId) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -43,18 +42,17 @@ class CartRepository extends dbOperation_1.DBOperation {
             return result.rowCount > 0 ? result.rows[0] : false;
         });
     }
-    // using alias to to find all cart_items that matches shopping_carts' 
     findCartItems(userId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const queryString = `SELECT
+            const queryString = `SELECT 
     ci.cart_id,
+    ci.item_id,
     ci.product_id,
     ci.name,
-    ci.image_url,
     ci.price,
     ci.item_qty,
-    ci.item_id,
-    ci.created_at FROM shopping_carts sc INNER JOIN cart_items ci ON sc.cart_id=ci.cart_id WHERE sc.user_id = $1`;
+    ci.image_url,
+    ci.created_at FROM shopping_carts sc INNER JOIN cart_items ci ON sc.cart_id=ci.cart_id WHERE sc.user_id=$1`;
             const values = [userId];
             const result = yield this.executeQuery(queryString, values);
             return result.rowCount > 0 ? result.rows : [];
@@ -62,7 +60,7 @@ class CartRepository extends dbOperation_1.DBOperation {
     }
     findCartItemsByCartId(cartId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const queryString = "SELECT product_id, name, image_url, price, item_qty FROM cart_items WHERE cart_id = $1";
+            const queryString = "SELECT product_id, name, image_url,  price, item_qty FROM cart_items WHERE cart_id = $1";
             const values = [cartId];
             const result = yield this.executeQuery(queryString, values);
             return result.rowCount > 0 ? result.rows : [];
@@ -70,7 +68,7 @@ class CartRepository extends dbOperation_1.DBOperation {
     }
     createCartItem({ cart_id, product_id, name, image_url, price, item_qty, }) {
         return __awaiter(this, void 0, void 0, function* () {
-            const queryString = "INSERT INTO cart_items(cart_id, product_id, name, image_url, price, item_qty) VALUES($1, $2, $3, $4, $5, $6) RETURNING *";
+            const queryString = "INSERT INTO cart_items(cart_id, product_id,name,image_url,price,item_qty) VALUES($1,$2,$3,$4,$5,$6) RETURNING *";
             const values = [cart_id, product_id, name, image_url, price, item_qty];
             const result = yield this.executeQuery(queryString, values);
             return result.rowCount > 0 ? result.rows[0] : false;
@@ -78,7 +76,7 @@ class CartRepository extends dbOperation_1.DBOperation {
     }
     updateCartItemById(itemId, qty) {
         return __awaiter(this, void 0, void 0, function* () {
-            const queryString = "UPDATE cart_items SET item_qty=$1 WHERE item_id = $2 RETURNING *";
+            const queryString = "UPDATE cart_items SET item_qty=$1 WHERE item_id=$2 RETURNING *";
             const values = [qty, itemId];
             const result = yield this.executeQuery(queryString, values);
             return result.rowCount > 0 ? result.rows[0] : false;
@@ -86,7 +84,7 @@ class CartRepository extends dbOperation_1.DBOperation {
     }
     updateCartItemByProductId(productId, qty) {
         return __awaiter(this, void 0, void 0, function* () {
-            const queryString = "UPDATE cart_items SET item_qty=$1 WHERE product_id = $2 RETURNING *";
+            const queryString = "UPDATE cart_items SET item_qty=$1 WHERE product_id=$2 RETURNING *";
             const values = [qty, productId];
             const result = yield this.executeQuery(queryString, values);
             return result.rowCount > 0 ? result.rows[0] : false;
@@ -94,7 +92,7 @@ class CartRepository extends dbOperation_1.DBOperation {
     }
     deleteCartItem(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const queryString = "DELETE FROM cart_items WHERE item_id =$1";
+            const queryString = "DELETE FROM cart_items WHERE item_id=$1";
             const values = [id];
             return this.executeQuery(queryString, values);
         });

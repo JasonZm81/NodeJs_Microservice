@@ -40,14 +40,10 @@ let UserService = class UserService {
             return (0, response_1.ErrorResponse)(404, "requested method is not supported!");
         });
     }
-    // export class UserService {
-    //   constructor() {}
     // User Creation, Validation & Login
     CreateUser(event) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                //b4 create the user, need to validate the user input.
-                // transform the input data type to required type
                 const input = (0, class_transformer_1.plainToClass)(SignupInput_1.SignupInput, event.body);
                 const error = yield (0, errors_1.AppValidationError)(input);
                 if (error)
@@ -61,9 +57,6 @@ let UserService = class UserService {
                     userType: "BUYER",
                     salt: salt,
                 });
-                // const body = JSON.parse(event.body);
-                // const body = event.body;
-                // console.log(body);
                 return (0, response_1.SucessResponse)(data);
             }
             catch (error) {
@@ -79,9 +72,7 @@ let UserService = class UserService {
                 const error = yield (0, errors_1.AppValidationError)(input);
                 if (error)
                     return (0, response_1.ErrorResponse)(404, error);
-                // check the email
                 const data = yield this.repository.findAccount(input.email);
-                //check or validate password
                 const verified = yield (0, password_1.ValidatePassword)(input.password, data.password, data.salt);
                 if (!verified) {
                     throw new Error("password does not match!");
@@ -97,16 +88,13 @@ let UserService = class UserService {
     }
     GetVerificationToken(event) {
         return __awaiter(this, void 0, void 0, function* () {
-            //as shown in demo, postman copy paste the token
             const token = event.headers.authorization;
             const payload = yield (0, password_1.VerifyToken)(token);
             if (!payload)
                 return (0, response_1.ErrorResponse)(403, "authorization failed!");
             const { code, expiry } = (0, notification_1.GenerateAccessCode)();
-            //save confirmed verification to DB
             yield this.repository.updateVerificationCode(payload.user_id, code, expiry);
-            // const response = await SendVerificationCode(code, payload.phone);
-            //the token
+            // await SendVerificationCode(code, payload.phone);
             return (0, response_1.SucessResponse)({
                 message: "verification code is sent to your registered mobile number!",
             });
@@ -122,9 +110,8 @@ let UserService = class UserService {
             const error = yield (0, errors_1.AppValidationError)(input);
             if (error)
                 return (0, response_1.ErrorResponse)(404, error);
-            // find user account with destructuring payload properties that containes verification_code, expiry
             const { verification_code, expiry } = yield this.repository.findAccount(payload.email);
-            // check code is same or not
+            // find the user account
             if (verification_code === parseInt(input.code)) {
                 // check expiry
                 const currentTime = new Date();
@@ -132,7 +119,6 @@ let UserService = class UserService {
                 console.log("time diff", diff);
                 if (diff > 0) {
                     console.log("verified successfully!");
-                    // update on DB
                     yield this.repository.updateVerifyUser(payload.user_id);
                 }
                 else {
@@ -154,8 +140,6 @@ let UserService = class UserService {
                 const error = yield (0, errors_1.AppValidationError)(input);
                 if (error)
                     return (0, response_1.ErrorResponse)(404, error);
-                // DB operation, create profile has 2 operations
-                // user table(user_id, first_name, lastname) & user_address table(...)
                 const result = yield this.repository.createProfile(payload.user_id, input);
                 return (0, response_1.SucessResponse)({ message: "profile created!" });
             }

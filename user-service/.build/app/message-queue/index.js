@@ -14,9 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PullData = void 0;
 const axios_1 = __importDefault(require("axios"));
-// it will be come from process.env
-const PRODUCT_SERVICE_URL = "https://zl6q2g9sn5.execute-api.us-east-1.amazonaws.com/prod/products-queue";
-// "http://127.0.0.1:3000/products-queue";  
+const PRODUCT_SERVICE_URL = 
+// "https://lm067yza5f.execute-api.us-east-1.amazonaws.com/prod/products-queue"; 
+"http://127.0.0.1:3000/products-queue"; // it will be come from process.env
 const PullData = (requestData) => __awaiter(void 0, void 0, void 0, function* () {
     return axios_1.default.post(PRODUCT_SERVICE_URL, requestData);
 });
